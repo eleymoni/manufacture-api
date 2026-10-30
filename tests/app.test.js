@@ -21,3 +21,15 @@ test('GET /prix refuse un prix negatif', async () => {
   const res = await request(app).get('/prix?ht=-1');
   expect(res.status).toBe(400);
 });
+
+test('GET /remise calcule le prix apres remise', async () => {
+  const res = await request(app).get('/remise?prix=200&pourcentage=25');
+  expect(res.status).toBe(200);
+  expect(res.body).toEqual({ prix: 200, pourcentage: 25, prixRemise: 150 });
+});
+
+test('GET /remise refuse une remise de 120 %', async () => {
+  const res = await request(app).get('/remise?prix=200&pourcentage=120');
+  expect(res.status).toBe(400);
+  expect(res.body).toEqual({ erreur: 'Remise invalide' });
+});
